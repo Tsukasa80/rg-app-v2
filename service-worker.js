@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'rgx-cache-v1';
+const CACHE_NAME = 'rgx-cache-v1';
 const ASSETS = [
   './',
   './index.html',
@@ -37,6 +37,14 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (!url.protocol.startsWith('http')) return;
+
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => cached || fetch(request).then((response) => {
       const copy = response.clone();
@@ -50,5 +58,5 @@ function cachedFallback(request) {
   if (request.mode === 'navigate') {
     return caches.match('./index.html');
   }
-  return Promise.resolve(new Response('オフラインです', { status: 503, statusText: 'Offline' }));
+  return Promise.resolve(new Response('Offline', { status: 503, statusText: 'Offline' }));
 }

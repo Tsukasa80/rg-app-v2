@@ -37,14 +37,36 @@ function openDatabase() {
   return dbPromise;
 }
 
+function isIdbRequest(value) {
+  return value && typeof value === 'object' && 'onsuccess' in value && 'onerror' in value;
+}
+
 async function withStore(name, mode, action) {
   const db = await openDatabase();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(name, mode);
     const store = tx.objectStore(name);
-    const result = action(store, tx);
-    tx.oncomplete = () => resolve(result);
-    tx.onerror = () => reject(tx.error);
+    let result;
+    try {
+      result = action(store, tx);
+    } catch (error) {
+      tx.abort();
+      reject(error);
+      return;
+    }
+
+    const handleError = (error) => reject(error ?? tx.error ?? new DOMException('Transaction aborted', 'AbortError'));
+
+    if (isIdbRequest(result)) {
+      result.onsuccess = () => resolve(result.result);
+      result.onerror = () => handleError(result.error);
+      tx.onabort = () => handleError();
+      tx.onerror = () => handleError();
+    } else {
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => handleError();
+      tx.onabort = () => handleError();
+    }
   });
 }
 
