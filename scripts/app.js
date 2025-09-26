@@ -4,7 +4,7 @@ import { renderHistory } from './ui/history.js';
 import { renderWeekly } from './ui/weekly.js';
 import { renderDashboard } from './ui/dashboard.js';
 import { renderSettings } from './ui/settings.js';
-import { openEntryModal } from './ui/entry-modal.js';
+import { openEntryModal, forceCloseEntryModal } from './ui/entry-modal.js';
 import { createEntry } from './data-service.js';
 import { showToast, qsa } from './utils/dom.js';
 
@@ -74,6 +74,7 @@ function setupAddEntry() {
 }
 
 async function renderCurrentRoute() {
+  forceCloseEntryModal();
   const state = getState();
   const route = state.currentRoute ?? 'home';
   const renderer = views[route] ?? views.home;
@@ -122,3 +123,4 @@ function setupServiceWorker() {
     });
   }
 }
+

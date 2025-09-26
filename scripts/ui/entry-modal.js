@@ -1,4 +1,4 @@
-﻿import { createEl, renderTo, trapFocus } from '../utils/dom.js';
+import { createEl, renderTo, trapFocus } from '../utils/dom.js';
 import { toInputDateTimeLocal } from '../utils/date.js';
 
 const ENERGY_OPTIONS = [
@@ -9,7 +9,19 @@ const ENERGY_OPTIONS = [
   { value: 2, label: '++' },
 ];
 
+let activeCleanup = null;
+
+export function forceCloseEntryModal() {
+  if (typeof activeCleanup === 'function') {
+    activeCleanup();
+  }
+}
+
 export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
+  if (activeCleanup) {
+    activeCleanup();
+  }
+
   const container = document.getElementById('modalContainer');
   container.hidden = false;
 
@@ -30,22 +42,35 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
 
   const backdropHandler = (event) => {
     if (event.target === container) {
-      closeModal();
+      cleanup();
     }
   };
 
-  function closeModal() {
+  const escHandler = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      cleanup();
+    }
+  };
+
+  function cleanup() {
+    if (container.hidden) return;
     container.hidden = true;
     renderTo(container, []);
     container.removeEventListener('click', backdropHandler);
+    document.removeEventListener('keydown', escHandler);
+    activeCleanup = null;
   }
 
-  closeBtn.addEventListener('click', closeModal);
+  activeCleanup = cleanup;
+
+  closeBtn.addEventListener('click', cleanup);
   container.addEventListener('click', backdropHandler);
+  document.addEventListener('keydown', escHandler);
 
   header.append(title, closeBtn);
 
-  const form = createEl('form');
+  const form = document.createElement('form');
   form.setAttribute('novalidate', 'true');
 
   form.innerHTML = `
@@ -91,12 +116,12 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
       const confirmDelete = window.confirm('このアクティビティを削除しますか？');
       if (!confirmDelete) return;
       await onDelete(entry);
-      closeModal();
+      cleanup();
     });
     buttonRow.append(deleteBtn);
   }
   const cancelBtn = createEl('button', { class: 'secondary', text: 'キャンセル', type: 'button' });
-  cancelBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', cleanup);
   const submitBtn = createEl('button', { class: 'primary', text: entry ? '更新する' : '保存する', type: 'submit' });
   buttonRow.append(cancelBtn, submitBtn);
 
@@ -170,9 +195,13 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
       durationMin: durationInput.value ? Number(durationInput.value) : undefined,
       occurredAt: new Date(occurredInput.value).toISOString(),
     };
-    await onSubmit(payload);
-    closeModal();
+    try {
+      await onSubmit(payload);
+      cleanup();
+    } catch (error) {
+      console.error('エントリの保存に失敗しました', error);
+    }
   });
 
-  return { close: closeModal };
+  return { close: cleanup };
 }
