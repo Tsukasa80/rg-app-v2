@@ -17,6 +17,7 @@ const views = {
 };
 
 const viewContainer = document.getElementById('viewContainer');
+const modalShell = document.getElementById('modalContainer');
 const nav = document.getElementById('appNav');
 const navToggle = document.getElementById('navToggle');
 const addEntryBtn = document.getElementById('addEntryBtn');
@@ -26,6 +27,11 @@ let deferredPrompt = null;
 init();
 
 function init() {
+  if (modalShell) {
+    modalShell.hidden = true;
+    modalShell.innerHTML = '';
+  }
+
   initState();
   setupNavigation();
   setupAddEntry();
@@ -33,7 +39,7 @@ function init() {
   setupServiceWorker();
 
   on(EVENTS.TOAST, (message) => showToast(message));
-  on(EVENTS.ROUTE_CHANGE, () => highlightActiveNav());
+  on(EVENTS.ROUTE_CHANGE, () => renderCurrentRoute());
   on(EVENTS.DATA_CHANGE, () => renderCurrentRoute());
   on(EVENTS.FILTER_CHANGE, () => renderCurrentRoute());
   on(EVENTS.SETTINGS_CHANGE, () => renderCurrentRoute());
@@ -75,6 +81,7 @@ function setupAddEntry() {
 
 async function renderCurrentRoute() {
   forceCloseEntryModal();
+  highlightActiveNav();
   const state = getState();
   const route = state.currentRoute ?? 'home';
   const renderer = views[route] ?? views.home;
@@ -104,6 +111,7 @@ function setupInstallPrompt() {
     deferredPrompt = event;
     installButton.hidden = false;
   });
+
   installButton.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -123,4 +131,3 @@ function setupServiceWorker() {
     });
   }
 }
-

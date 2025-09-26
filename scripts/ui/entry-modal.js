@@ -1,4 +1,4 @@
-import { createEl, renderTo, trapFocus } from '../utils/dom.js';
+﻿import { createEl, renderTo, trapFocus } from '../utils/dom.js';
 import { toInputDateTimeLocal } from '../utils/date.js';
 
 const ENERGY_OPTIONS = [
@@ -13,16 +13,17 @@ let activeCleanup = null;
 
 export function forceCloseEntryModal() {
   if (typeof activeCleanup === 'function') {
-    activeCleanup();
+    activeCleanup(true);
   }
 }
 
 export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
-  if (activeCleanup) {
-    activeCleanup();
+  if (typeof activeCleanup === 'function') {
+    activeCleanup(true);
   }
 
   const container = document.getElementById('modalContainer');
+  if (!container) return null;
   container.hidden = false;
 
   const defaultState = entry ?? {
@@ -37,42 +38,48 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
 
   const modal = createEl('div', { class: 'modal', role: 'document' });
   const header = createEl('div', { class: 'modal-header' });
-  const title = createEl('h2', { class: 'modal-title', text: entry ? 'アクティビティを編集' : 'アクティビティを追加' });
-  const closeBtn = createEl('button', { class: 'secondary', text: '閉じる', type: 'button' });
+  const title = createEl('h2', {
+    class: 'modal-title',
+    text: entry ? 'アクティビティを編集' : 'アクティビティを追加',
+  });
+  const closeBtn = createEl('button', {
+    class: 'secondary',
+    text: '閉じる',
+    type: 'button',
+  });
 
-  const backdropHandler = (event) => {
+  function cleanup(force = false) {
+    container.removeEventListener('click', backdropHandler);
+    document.removeEventListener('keydown', escHandler);
+    activeCleanup = null;
+    if (!force && container.hidden) return;
+    container.hidden = true;
+    renderTo(container, []);
+  }
+
+  function backdropHandler(event) {
     if (event.target === container) {
       cleanup();
     }
-  };
+  }
 
-  const escHandler = (event) => {
+  function escHandler(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
       cleanup();
     }
-  };
-
-  function cleanup() {
-    if (container.hidden) return;
-    container.hidden = true;
-    renderTo(container, []);
-    container.removeEventListener('click', backdropHandler);
-    document.removeEventListener('keydown', escHandler);
-    activeCleanup = null;
   }
 
   activeCleanup = cleanup;
 
-  closeBtn.addEventListener('click', cleanup);
+  closeBtn.addEventListener('click', () => cleanup());
   container.addEventListener('click', backdropHandler);
   document.addEventListener('keydown', escHandler);
 
   header.append(title, closeBtn);
 
-  const form = document.createElement('form');
+  const form = createEl('form');
   form.setAttribute('novalidate', 'true');
-
   form.innerHTML = `
     <div class="form-group">
       <label>タイプ</label>
@@ -113,15 +120,15 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
   if (entry && onDelete) {
     const deleteBtn = createEl('button', { class: 'secondary', text: '削除', type: 'button' });
     deleteBtn.addEventListener('click', async () => {
-      const confirmDelete = window.confirm('このアクティビティを削除しますか？');
-      if (!confirmDelete) return;
+      const confirmed = window.confirm('このアクティビティを削除しますか？');
+      if (!confirmed) return;
       await onDelete(entry);
       cleanup();
     });
     buttonRow.append(deleteBtn);
   }
   const cancelBtn = createEl('button', { class: 'secondary', text: 'キャンセル', type: 'button' });
-  cancelBtn.addEventListener('click', cleanup);
+  cancelBtn.addEventListener('click', () => cleanup());
   const submitBtn = createEl('button', { class: 'primary', text: entry ? '更新する' : '保存する', type: 'submit' });
   buttonRow.append(cancelBtn, submitBtn);
 
@@ -141,17 +148,17 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
   let currentType = defaultState.type;
   let currentEnergy = defaultState.energy;
 
-  function updateTypeButtons() {
+  const updateTypeButtons = () => {
     typeButtons.forEach((button) => {
       button.classList.toggle('active', button.dataset.type === currentType);
     });
-  }
+  };
 
-  function updateEnergyButtons() {
+  const updateEnergyButtons = () => {
     energyButtons.forEach((button) => {
       button.classList.toggle('active', Number(button.dataset.energy) === Number(currentEnergy));
     });
-  }
+  };
 
   typeButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -184,6 +191,7 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
       return;
     }
     titleInput.setCustomValidity('');
+
     const tags = tagInput.value.split(',').map((tag) => tag.trim()).filter(Boolean);
     const payload = {
       ...entry,
@@ -195,6 +203,7 @@ export function openEntryModal({ entry = null, onSubmit, onDelete } = {}) {
       durationMin: durationInput.value ? Number(durationInput.value) : undefined,
       occurredAt: new Date(occurredInput.value).toISOString(),
     };
+
     try {
       await onSubmit(payload);
       cleanup();
