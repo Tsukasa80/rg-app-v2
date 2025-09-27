@@ -1,4 +1,7 @@
-﻿:root {
+/* Ensure hidden elements are not displayed */
+[hidden]{display:none !important;}
+.modal-container[hidden]{display:none !important;}
+:root {
   color-scheme: light dark;
   --color-green: #1f8b4c;
   --color-red: #b23a48;
