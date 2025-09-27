@@ -131,3 +131,36 @@ function setupServiceWorker() {
     });
   }
 }
+
+// --- Tabs UI enhancement: ARIA + keyboard ---
+function highlightActiveNav() {
+  const state = getState();
+  const current = state.currentRoute;
+  const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));
+  tabs.forEach((item) => {
+    const active = item.dataset.route === current;
+    item.classList.toggle('active', active);
+    item.setAttribute('role', 'tab');
+    item.setAttribute('aria-selected', String(active));
+    item.setAttribute('tabindex', active ? '0' : '-1');
+  });
+}
+
+(function setupTabNavigation(){
+  const nav = document.getElementById('appNav');
+  if (!nav) return;
+  nav.addEventListener('keydown', (e) => {
+    if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+    const tabs = Array.from(nav.querySelectorAll(".nav-item[role='tab']"));
+    const current = document.activeElement && document.activeElement.closest(".nav-item[role='tab']");
+    const idx = tabs.indexOf(current);
+    if (idx === -1) return;
+    e.preventDefault();
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+    if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+    if (e.key === 'Home') nextIdx = 0;
+    if (e.key === 'End') nextIdx = tabs.length - 1;
+    tabs[nextIdx].focus();
+  });
+})();
