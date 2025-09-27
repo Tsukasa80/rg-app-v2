@@ -72,7 +72,7 @@ function setupAddEntry() {
     openEntryModal({
       onSubmit: async (payload) => {
         await createEntry(payload, getState().settings);
-        notify('入力を保存しました');
+        notify('蜈･蜉帙ｒ菫晏ｭ倥＠縺ｾ縺励◆');
         renderCurrentRoute();
       },
     });
@@ -91,21 +91,13 @@ async function renderCurrentRoute() {
     viewContainer.scrollTop = 0;
   } catch (error) {
     console.error(error);
-    viewContainer.innerHTML = '<p>画面の描画でエラーが発生しました。</p>';
+    viewContainer.innerHTML = '<p>逕ｻ髱｢縺ｮ謠冗判縺ｧ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆縲・/p>';
   } finally {
     viewContainer.removeAttribute('aria-busy');
   }
 }
 
-function highlightActiveNav() {
-  const state = getState();
-  const current = state.currentRoute;
-  qsa('.nav-item', nav).forEach((item) => {
-    item.classList.toggle('active', item.dataset.route === current);
-  });
-}
-
-function setupInstallPrompt() {
+function highlightActiveNav() {\n  const state = getState();\n  const current = state.currentRoute;\n  const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));\n  tabs.forEach((item) => {\n    const active = item.dataset.route === current;\n    item.classList.toggle('active', active);\n    item.setAttribute('aria-selected', String(active));\n    item.setAttribute('tabindex', active ? '0' : '-1');\n  });\n}\n\nfunction setupInstallPrompt() {
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     deferredPrompt = event;
@@ -117,7 +109,7 @@ function setupInstallPrompt() {
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if (choice.outcome === 'accepted') {
-      notify('インストールが開始されました');
+      notify('繧､繝ｳ繧ｹ繝医・繝ｫ縺碁幕蟋九＆繧後∪縺励◆');
     }
     deferredPrompt = null;
     installButton.hidden = true;
@@ -132,19 +124,7 @@ function setupServiceWorker() {
   }
 }
 
-// --- Tabs UI enhancement\nfunction highlightActiveNav() {
-  const state = getState();
-  const current = state.currentRoute;
-  const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));
-  tabs.forEach((item) => {
-    const active = item.dataset.route === current;
-    item.classList.toggle('active', active);
-    item.setAttribute('aria-selected', String(active));
-    item.setAttribute('tabindex', active ? '0' : '-1');
-  });
-}
-
-(function setupTabNavigation(){
+// --- Tabs UI enhancement\n(function setupTabNavigation(){
   const nav = document.getElementById('appNav');
   if (!nav) return;
   nav.addEventListener('keydown', (e) => {
