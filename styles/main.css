@@ -524,3 +524,27 @@ button.secondary {
   min-height: 4rem;
 }
 
+/* Force top horizontal nav across breakpoints */
+.nav-toggle{ display:none !important; }
+.app-nav{
+  position: sticky;
+  top: var(--header-height);
+  height: var(--nav-height);
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: .25rem;
+  padding: 0 1rem;
+  overflow-x: auto;
+  background: var(--color-surface);
+  border-right: none !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+/* Cancel desktop sidebar layout */
+@media (min-width:768px){
+  .app-shell{
+    grid-template-columns: unset !important;
+    grid-template-rows: var(--header-height) minmax(0,1fr) !important;
+  }
+  .app-header{ grid-column: auto !important; }
+}
