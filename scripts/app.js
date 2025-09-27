@@ -72,7 +72,7 @@ function setupAddEntry() {
     openEntryModal({
       onSubmit: async (payload) => {
         await createEntry(payload, getState().settings);
-        notify('入力を保存しました');
+        notify('蜈･蜉帙ｒ菫晏ｭ倥＠縺ｾ縺励◆');
         renderCurrentRoute();
       },
     });
@@ -91,7 +91,7 @@ async function renderCurrentRoute() {
     viewContainer.scrollTop = 0;
   } catch (error) {
     console.error(error);
-    viewContainer.innerHTML = '<p>画面の描画でエラーが発生しました。</p>';
+    viewContainer.innerHTML = '<p>逕ｻ髱｢縺ｮ謠冗判縺ｧ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆縲・/p>';
   } finally {
     viewContainer.removeAttribute('aria-busy');
   }
@@ -121,7 +121,7 @@ function setupInstallPrompt() {
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if (choice.outcome === 'accepted') {
-      notify('インストールが開始されました');
+      notify('繧､繝ｳ繧ｹ繝医・繝ｫ縺碁幕蟋九＆繧後∪縺励◆');
     }
     deferredPrompt = null;
     installButton.hidden = true;
@@ -130,9 +130,19 @@ function setupInstallPrompt() {
 
 function setupServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').catch((error) => {
+    try {
+      navigator.serviceWorker.register('./service-worker.js').then((reg) => {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      }).catch((error) => {
+        console.error('ServiceWorker registration failed', error);
+      });
+    } catch (error) {
       console.error('ServiceWorker registration failed', error);
-    });
+    }
+  }
+});
   }
 }
 
