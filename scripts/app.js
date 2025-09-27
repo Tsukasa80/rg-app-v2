@@ -72,7 +72,7 @@ function setupAddEntry() {
     openEntryModal({
       onSubmit: async (payload) => {
         await createEntry(payload, getState().settings);
-        notify('蜈･蜉帙ｒ菫晏ｭ倥＠縺ｾ縺励◆');
+        notify('陷茨ｽ･陷牙ｸ呻ｽ定将譎擾ｽｭ蛟･・邵ｺ・ｾ邵ｺ蜉ｱ笳・);
         renderCurrentRoute();
       },
     });
@@ -91,13 +91,25 @@ async function renderCurrentRoute() {
     viewContainer.scrollTop = 0;
   } catch (error) {
     console.error(error);
-    viewContainer.innerHTML = '<p>逕ｻ髱｢縺ｮ謠冗判縺ｧ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆縲・/p>';
+    viewContainer.innerHTML = '<p>画面の描画でエラーが発生しました。</p>';
   } finally {
     viewContainer.removeAttribute('aria-busy');
   }
 }
 
-function highlightActiveNav() {\n  const state = getState();\n  const current = state.currentRoute;\n  const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));\n  tabs.forEach((item) => {\n    const active = item.dataset.route === current;\n    item.classList.toggle('active', active);\n    item.setAttribute('aria-selected', String(active));\n    item.setAttribute('tabindex', active ? '0' : '-1');\n  });\n}\n\nfunction setupInstallPrompt() {
+function highlightActiveNav() {
+  const state = getState();
+  const current = state.currentRoute;
+  const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));
+  tabs.forEach((item) => {
+    const active = item.dataset.route === current;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-selected', String(active));
+    item.setAttribute('tabindex', active ? '0' : '-1');
+  });
+}
+
+function setupInstallPrompt() {
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     deferredPrompt = event;
@@ -109,7 +121,7 @@ function highlightActiveNav() {\n  const state = getState();\n  const current = 
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if (choice.outcome === 'accepted') {
-      notify('繧､繝ｳ繧ｹ繝医・繝ｫ縺碁幕蟋九＆繧後∪縺励◆');
+      notify('インストールが開始されました');
     }
     deferredPrompt = null;
     installButton.hidden = true;
