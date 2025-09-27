@@ -72,7 +72,7 @@ function setupAddEntry() {
     openEntryModal({
       onSubmit: async (payload) => {
         await createEntry(payload, getState().settings);
-        notify('陷茨ｽ･陷牙ｸ呻ｽ定将譎擾ｽｭ蛟･・邵ｺ・ｾ邵ｺ蜉ｱ笳・);
+        notify('入力を保存しました');
         renderCurrentRoute();
       },
     });
@@ -136,7 +136,8 @@ function setupServiceWorker() {
   }
 }
 
-// --- Tabs UI enhancement\n(function setupTabNavigation(){
+// Keyboard navigation for tabs
+(function setupTabNavigation(){
   const nav = document.getElementById('appNav');
   if (!nav) return;
   nav.addEventListener('keydown', (e) => {
