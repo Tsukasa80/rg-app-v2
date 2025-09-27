@@ -1,4 +1,4 @@
-﻿import { initState, onReady, setRoute, getState, on, EVENTS, notify } from './state.js';
+import { initState, onReady, setRoute, getState, on, EVENTS, notify } from './state.js';
 import { renderHome } from './ui/home.js';
 import { renderHistory } from './ui/history.js';
 import { renderWeekly } from './ui/weekly.js';
@@ -132,15 +132,13 @@ function setupServiceWorker() {
   }
 }
 
-// --- Tabs UI enhancement: ARIA + keyboard ---
-function highlightActiveNav() {
+// --- Tabs UI enhancement\nfunction highlightActiveNav() {
   const state = getState();
   const current = state.currentRoute;
   const tabs = Array.from(document.querySelectorAll('#appNav .nav-item'));
   tabs.forEach((item) => {
     const active = item.dataset.route === current;
     item.classList.toggle('active', active);
-    item.setAttribute('role', 'tab');
     item.setAttribute('aria-selected', String(active));
     item.setAttribute('tabindex', active ? '0' : '-1');
   });
@@ -151,9 +149,9 @@ function highlightActiveNav() {
   if (!nav) return;
   nav.addEventListener('keydown', (e) => {
     if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
-    const tabs = Array.from(nav.querySelectorAll(".nav-item[role='tab']"));
-    const current = document.activeElement && document.activeElement.closest(".nav-item[role='tab']");
-    const idx = tabs.indexOf(current);
+    const tabs = Array.from(nav.querySelectorAll('.nav-item'));
+    const currentEl = document.activeElement && document.activeElement.closest('.nav-item');
+    const idx = tabs.indexOf(currentEl);
     if (idx === -1) return;
     e.preventDefault();
     let nextIdx = idx;
