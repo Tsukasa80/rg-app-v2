@@ -7,11 +7,15 @@ export function toDate(value) {
 }
 
 export function formatDate(value, locale = 'ja-JP') {
-  return toDate(value).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+  return toDate(value).toLocaleDateString(locale, {
+    year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'
+  });
 }
 
 export function formatDateTime(value, locale = 'ja-JP') {
-  return toDate(value).toLocaleString(locale, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return toDate(value).toLocaleString(locale, {
+    year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
 }
 
 export function formatTime(value, locale = 'ja-JP') {
@@ -19,9 +23,9 @@ export function formatTime(value, locale = 'ja-JP') {
 }
 
 export function toInputDateTimeLocal(value) {
-  const date = toDate(value);
+  const d = toDate(value);
   const pad = (n) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 export function parseDateFromInput(value) {
@@ -29,24 +33,14 @@ export function parseDateFromInput(value) {
   const [datePart, timePart] = value.split('T');
   const [year, month, day] = datePart.split('-').map(Number);
   const [hour = 0, minute = 0] = timePart ? timePart.split(':').map(Number) : [0, 0];
-  return new Date(Date.UTC(year, month - 1, day, hour, minute));
-}
-
-export function getWeekYear(date, weekStartsOn = 1) {\n  const d = toDate(date);\n  const target = startOfWeek(d, weekStartsOn);\n  return target.getFullYear();\n}
-
-export function getWeekNumber(date, weekStartsOn = 1) {\n  const d = toDate(date);\n  const firstDay = new Date(Date.UTC(d.getFullYear(), 0, 1));\n  const firstWeekStart = startOfWeek(firstDay, weekStartsOn);\n  const diff = startOfWeek(d, weekStartsOn) - firstWeekStart;\n  return Math.floor(diff / DAY_MS / 7) + 1;\n}
-
-export function getWeekKey(date, weekStartsOn = 1) {
-  const week = getWeekNumber(date, weekStartsOn);
-  const year = getWeekYear(date, weekStartsOn);
-  return `${year}-${String(week).padStart(2, '0')}`;
+  return new Date(year, month - 1, day, hour, minute);
 }
 
 export function startOfWeek(value, weekStartsOn = 1) {
-  const date = toDate(value);
-  const day = date.getDay();
+  const d = toDate(value);
+  const day = d.getDay();
   const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
-  const start = new Date(date);
+  const start = new Date(d);
   start.setHours(0, 0, 0, 0);
   start.setDate(start.getDate() - diff);
   return start;
@@ -60,22 +54,39 @@ export function endOfWeek(value, weekStartsOn = 1) {
   return end;
 }
 
+export function getWeekYear(date, weekStartsOn = 1) {
+  const d = toDate(date);
+  const target = startOfWeek(d, weekStartsOn);
+  return target.getFullYear();
+}
+
+export function getWeekNumber(date, weekStartsOn = 1) {
+  const d = toDate(date);
+  const firstDay = new Date(d.getFullYear(), 0, 1);
+  const firstWeekStart = startOfWeek(firstDay, weekStartsOn);
+  const diff = startOfWeek(d, weekStartsOn) - firstWeekStart;
+  return Math.floor(diff / DAY_MS / 7) + 1;
+}
+
+export function getWeekKey(date, weekStartsOn = 1) {
+  const week = getWeekNumber(date, weekStartsOn);
+  const year = getWeekYear(date, weekStartsOn);
+  return `${year}-${String(week).padStart(2, '0')}`;
+}
+
 export function getWeekRange(year, week, weekStartsOn = 1) {
-  const base = new Date(Date.UTC(year, 0, 1));
-  const firstWeekStart = startOfWeek(base, weekStartsOn);
-  const start = new Date(firstWeekStart.getTime() + (week - 1) * 7 * DAY_MS);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
+  const jan1 = new Date(year, 0, 1);
+  const start = startOfWeek(new Date(jan1.getTime() + (week - 1) * 7 * DAY_MS), weekStartsOn);
+  const end = endOfWeek(start, weekStartsOn);
   return { start, end };
 }
 
 export function isoWeekInfo(value) {
-  const date = toDate(value);
-  const tmp = new Date(date.getTime());
+  const d = toDate(value);
+  const tmp = new Date(d.getTime());
   tmp.setHours(0, 0, 0, 0);
   tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
-  const yearStart = new Date(Date.UTC(tmp.getFullYear(), 0, 1));
+  const yearStart = new Date(tmp.getFullYear(), 0, 1);
   const week = Math.ceil(((tmp - yearStart) / DAY_MS + 1) / 7);
   return { year: tmp.getFullYear(), isoWeek: week };
 }
@@ -86,7 +97,7 @@ export function diffInMinutes(a, b) {
 
 export function isWithinRange(value, start, end) {
   const time = toDate(value).getTime();
-  return time >= start.getTime() && time <= end.getTime();
+  return time >= toDate(start).getTime() && time <= toDate(end).getTime();
 }
 
 export function formatDuration(minutes) {
