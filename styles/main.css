@@ -616,3 +616,15 @@ button.primary, .floating-action, .toast, .bar-inner{ background: var(--color-ac
 
 /* Optional: green badge styling */
 .badge.green{ background: rgba(34,197,94,0.18); color:#22c55e; border:1px solid rgba(34,197,94,0.45); }
+/* === Energy indicator: positive accents to green === */
+.energy-pill[data-energy="2"],
+.energy-pill[data-energy="1"]{
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+.energy-pill.active{
+  background: color-mix(in sRGB, var(--color-accent) 20%, transparent) !important;
+}
+@supports not (color: color-mix(in sRGB, white 50%, black 50%)){
+  .energy-pill.active{ background: rgba(34,197,94,0.2) !important; }
+}
