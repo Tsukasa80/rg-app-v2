@@ -1,4 +1,4 @@
-﻿const DAY_MS = 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function toDate(value) {
   if (!value) return new Date();
@@ -32,17 +32,9 @@ export function parseDateFromInput(value) {
   return new Date(Date.UTC(year, month - 1, day, hour, minute));
 }
 
-export function getWeekYear(date, weekStartsOn = 1) {
-  const target = startOfWeek(date, weekStartsOn);
-  return target.getFullYear();
-}
+export function getWeekYear(date, weekStartsOn = 1) {\n  const d = toDate(date);\n  const target = startOfWeek(d, weekStartsOn);\n  return target.getFullYear();\n}
 
-export function getWeekNumber(date, weekStartsOn = 1) {
-  const firstDay = new Date(Date.UTC(date.getFullYear(), 0, 1));
-  const firstWeekStart = startOfWeek(firstDay, weekStartsOn);
-  const diff = startOfWeek(date, weekStartsOn) - firstWeekStart;
-  return Math.floor(diff / DAY_MS / 7) + 1;
-}
+export function getWeekNumber(date, weekStartsOn = 1) {\n  const d = toDate(date);\n  const firstDay = new Date(Date.UTC(d.getFullYear(), 0, 1));\n  const firstWeekStart = startOfWeek(firstDay, weekStartsOn);\n  const diff = startOfWeek(d, weekStartsOn) - firstWeekStart;\n  return Math.floor(diff / DAY_MS / 7) + 1;\n}
 
 export function getWeekKey(date, weekStartsOn = 1) {
   const week = getWeekNumber(date, weekStartsOn);
