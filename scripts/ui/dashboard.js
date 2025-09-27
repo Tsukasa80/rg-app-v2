@@ -1,4 +1,4 @@
-﻿import { renderTo, createEl } from '../utils/dom.js';
+import { renderTo, createEl } from '../utils/dom.js';
 import { fetchEntries, summariseEntries, formatSummary } from '../data-service.js';
 import { formatDate, formatDuration } from '../utils/date.js';
 
@@ -82,13 +82,14 @@ function createEnergyHistogram(summary) {
   }
   const max = Math.max(...Object.values(summary.energyHistogram));
   const list = createEl('div');
-  Object.entries(summary.energyHistogram).forEach(([energy, count]) => {
+  const items = summary.histogramList ?? [];
+  items.forEach(({ energy, label, count }) => {
     const row = createEl('div', { class: 'summary-card' });
-    row.append(createEl('span', { text: `指標 ${energy}` }));
+    row.append(createEl('span', { text: 指標  }));
     const bar = createEl('div', { class: 'bar' });
     const inner = createEl('div', { class: 'bar-inner' });
-    inner.style.width = max ? `${(count / max) * 100}%` : '0%';
-    inner.textContent = `${count} 件`;
+    inner.style.width = max ? ${(count / max) * 100}% : '0%';
+    inner.textContent = ${count} 件;
     bar.append(inner);
     row.append(bar);
     list.append(row);

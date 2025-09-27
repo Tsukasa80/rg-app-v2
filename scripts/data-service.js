@@ -1,4 +1,4 @@
-﻿import { listActivities, addActivity, deleteActivity, getActivity, saveWeeklySelection, getWeeklySelection, saveWeeklyReflection, getWeeklyReflection, exportAll, importData } from './db.js';
+import { listActivities, addActivity, deleteActivity, getActivity, saveWeeklySelection, getWeeklySelection, saveWeeklyReflection, getWeeklyReflection, exportAll, importData } from './db.js';
 import { startOfWeek, endOfWeek, isWithinRange, formatEnergy, formatDuration, getWeekKey, isoWeekInfo } from './utils/date.js';
 
 export async function fetchEntries(filters = {}, settings) {
@@ -141,10 +141,14 @@ export function summariseEntries(entries) {
 }
 
 export function formatSummary(summary) {
+  const order = ['-2','-1','0','1','2'];
+  const histogramList = order.map((k) => ({ energy: k, label: formatEnergy(k), count: summary.energyHistogram?.[k] ?? 0 }));
   return {
     ...summary,
     totalDurationLabel: formatDuration(summary.totalDuration),
-    histogramList: Object.entries(summary.energyHistogram).map(([energy, count]) => ({ energy, label: formatEnergy(energy), count })),
+    histogramList,
+  };
+})),
   };
 }
 
