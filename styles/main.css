@@ -548,3 +548,61 @@ button.secondary {
   }
   .app-header{ grid-column: auto !important; }
 }
+/* === Theme Override: Black / White / Red === */
+:root{
+  --color-bg:#000000;
+  --color-surface:#0b0b0b;
+  --color-text:#ffffff;
+  --color-muted:#b3b3b3;
+  --color-accent:#e11d48; /* red */
+  --color-red:#e11d48;
+  --color-green:#ffffff; /* use white for positive cues */
+}
+
+/* Base */
+html,body{ background-color:var(--color-bg); color:var(--color-text); }
+.app-header{ background:#000; color:#fff; border-bottom:1px solid rgba(255,255,255,0.08); }
+.app-nav{ background:#000; border-bottom:1px solid rgba(255,255,255,0.12); }
+.app-main{ background:transparent; }
+.card{ background:var(--color-surface); border:1px solid rgba(255,255,255,0.06); box-shadow:none; }
+
+/* Tabs */
+.nav-item{ color:var(--color-muted); background:transparent; border-radius:0; border-bottom:3px solid transparent; }
+.nav-item.active{ color:#fff; border-bottom-color:var(--color-accent); }
+
+/* Buttons */
+button.primary{ background:var(--color-accent); color:#fff; }
+button.secondary{ background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); }
+.floating-action{ background:var(--color-accent); }
+
+/* Badges */
+.badge{ background:rgba(255,255,255,0.08); color:#fff; }
+.badge.red{ background:rgba(225,17,72,0.18); color:var(--color-red); border:1px solid rgba(225,17,72,0.45); }
+.badge.green{ background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); }
+
+/* Pills */
+.radio-pill,.energy-pill{ background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.15); }
+.energy-pill[data-energy="2"],.energy-pill[data-energy="1"]{ color:#fff; }
+.energy-pill[data-energy="-1"],.energy-pill[data-energy="-2"]{ color:var(--color-red); border-color:rgba(225,17,72,0.45); }
+.energy-pill.active{ border-color:currentColor; background:rgba(255,255,255,0.12); }
+
+/* Inputs */
+input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+}
+input::placeholder,textarea::placeholder{ color:rgba(255,255,255,0.5); }
+
+/* Tags */
+.tag{ background:rgba(255,255,255,0.12); color:#fff; }
+
+/* Toast */
+.toast{ background:var(--color-accent); color:#fff; }
+
+/* Bars */
+.bar{ background:rgba(255,255,255,0.12); }
+.bar-inner{ background:var(--color-accent); }
+
+/* Focus */
+:focus-visible{ outline:2px solid var(--color-accent); outline-offset:2px; }
